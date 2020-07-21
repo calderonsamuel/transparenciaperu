@@ -1,47 +1,66 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
+library(shinyWidgets)
 
-# Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("Transparencia Peru"),
 
-    # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+            selectInput(inputId = "entidad",
+                        label =  "Entidad", 
+                        choices = "Ministerio de Vivienda, Construcción y Saneamiento",
+                        selected = "Ministerio de Vivienda, Construcción y Saneamiento"),
+            
+            # dateInput(inputId = "fecha",
+            #           label = "Año y mes", 
+            #           value = "2020-03-01",
+            #           min = "2020-01-01",
+            #           max = "2020-03-01", 
+            #           format = "yyyy-mm"),
+            
+            airDatepickerInput(inputId = "fecha", 
+                               label = "Mes y año", 
+                               value = "2020-03-02",
+                               dateFormat = "MM-yyyy",
+                               view = "months",
+                               minView = "months", 
+                               autoClose = TRUE, 
+                               maxDate = "2020-03-31", 
+                               minDate = "2018-01-01",
+                               language = "es"),
+            
+            actionButton("shinyWB",
+                       "Descarga",
+                       icon("cloud-download")),
+            
+            uiOutput("boton"),
+            # tags$div(class = "submit",
+            #          tags$a(href = "https://www.google.com", 
+            #                 "Learn More", 
+            #                 target="_blank")
+            # )
+            
+            
         ),
 
-        # Show a plot of the generated distribution
         mainPanel(
-           plotOutput("distPlot")
         )
     )
 )
 
-# Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    # observeEvent(input$shinyWB, {
+    #     link <- "https://www.google.com"
+    #     tags$script(paste0("window.open('", link, "', '_blank')"))
+    # })
+    
+    output$boton <- renderUI({
+        req(input$shinyWB > 0)
+        link <- "http://www.transparencia.gob.pe/personal/pte_transparencia_personal_genera.aspx?id_entidad=11476&in_anno_consulta=2020&ch_mes_consulta=01&ch_tipo_regimen=0&vc_dni_funcionario=&vc_nombre_funcionario=&ch_tipo_descarga=1"
+        tags$script(paste0("window.open('", link, "', '_blank')"))
     })
 }
 
