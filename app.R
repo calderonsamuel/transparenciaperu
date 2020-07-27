@@ -4,7 +4,7 @@ library(lubridate)
 library(stringr)
 library(rclipboard)
 
-entidades <- read.csv("codigo_entidad.csv")
+entidades <- read.csv("codigo_entidad.csv", encoding = "UTF-8")
 
 
 ui <- fluidPage(
@@ -16,14 +16,18 @@ ui <- fluidPage(
 
     sidebarLayout(
         sidebarPanel(
-            tags$p("Aquí podrás conseguir una vía rápida para obtener datos de los portales de transparencia. 
-                   Por lo pronto, puedes descargar datos de personal que ha trabajado en los ministerios, desde enero 2016 a marzo 2020."),
+            tags$p("Aquí podrás conseguir una vía rápida para obtener datos 
+                    de los portales de transparencia. 
+                   Por lo pronto, puedes descargar datos de personal que ha
+                   trabajado en los ministerios, desde enero 2016 a marzo 2020."),
             tags$h2("Instrucciones"),
             tags$ol(
                 tags$li("Selecciona la entidad."),
                 tags$li("Elige el mes y año de la información."),
-                tags$li('Haz click en Copiar url y pega (Ctrl+V) el texto en la barra de dirección de una nueva pestaña. 
-                        También puedes seleccionar el texto (triple click), hacerle click derecho y elegir "Ir a ..."')
+                tags$li('Haz click en "Descargar", 
+                        se abrirá una pestaña que se cerrará 
+                        cuando inicie el proceso de descarga. 
+                        Puedes copiar el enlace de descarga si deseas conservarlo')
             ),
             selectInput(inputId = "entidad",
                         label =  "Entidad", 
@@ -38,23 +42,17 @@ ui <- fluidPage(
                                minView = "months", 
                                autoClose = TRUE, 
                                maxDate = "2020-03-31", 
-                               minDate = "2018-01-01",
-                               language = "es"),
-            
-            # actionButton("shinyWB",
-            #            "Descarga",
-            #            icon("cloud-download")),
-            # 
-            # uiOutput("boton")
+                               minDate = "2016-01-08",
+                               language = "es")
         ),
 
         mainPanel(
             
             fluidRow(
-                column(width = 2, uiOutput("clip")),
-                column(width = 6,
-                tags$h5(textOutput("url"),1))
+                column(width = 2, uiOutput("descarga")),
+                column(width = 2, uiOutput("clip"))
             )
+            
             
         )
     )
@@ -62,10 +60,6 @@ ui <- fluidPage(
 
 server <- function(input, output) {
 
-    # observeEvent(input$shinyWB, {
-    #     link <- "https://www.google.com"
-    #     tags$script(paste0("window.open('", link, "', '_blank')"))
-    # })
     link1 <- reactive({
         
         codigo_entidad <- subset(entidades, Entidad %in% input$entidad)$Codigo
@@ -76,23 +70,21 @@ server <- function(input, output) {
                     "id_entidad=", codigo_entidad,
                     "&in_anno_consulta=", year,
                     "&ch_mes_consulta=",month,
-                    "&ch_tipo_regimen=0&vc_dni_funcionario=&vc_nombre_funcionario=&ch_tipo_descarga=1")
-    })
-    
-    # output$boton <- renderUI({
-    #     req(input$shinyWB > 0)
-    #     
-    #     link2 <- "http://www.transparencia.gob.pe/personal/pte_transparencia_personal_genera.aspx?id_entidad=136&in_anno_consulta=2020&ch_mes_consulta=03&ch_tipo_regimen=0&vc_dni_funcionario=&vc_nombre_funcionario=&ch_tipo_descarga=1"
-    #         
-    #     tags$script(paste0("window.open('", link2, "', '_blank')"))
-    # })
-    
-    output$url <- renderText({
-        link1()
+                    "&ch_tipo_regimen=0",
+                    "&vc_dni_funcionario=",
+                    "&vc_nombre_funcionario=",
+                    "&ch_tipo_descarga=1")
     })
     
     output$clip <- renderUI({
-        rclipButton("clipbtn", "Copiar url", link1(), icon("clipboard"))
+        rclipButton(inputId = "clipbtn", 
+                    label = "Copiar enlace de descarga", 
+                    clipText = link1(), 
+                    icon = icon("clipboard"))
+    })
+    
+    output$descarga <- renderUI({
+        tags$a("Descargar", href = link1(), target = "_blank")
     })
     
 }
