@@ -19,7 +19,7 @@ ui <- fluidPage(
             tags$p("Aquí podrás conseguir una vía rápida para obtener datos 
                     de los portales de transparencia. 
                    Por lo pronto, puedes descargar datos de personal que ha
-                   trabajado en los ministerios, desde enero 2016 a marzo 2020."),
+                   trabajado en los ministerios, desde enero 2016 a marzo 2020, en formato xls (Excel)."),
             tags$h2("Instrucciones"),
             tags$ol(
                 tags$li("Selecciona la entidad."),
@@ -47,13 +47,31 @@ ui <- fluidPage(
         ),
 
         mainPanel(
-            
-            fluidRow(
-                column(width = 2, uiOutput("descarga")),
-                column(width = 2, uiOutput("clip"))
-            )
-            
-            
+            tabsetPanel(
+                tabPanel("Descarga",
+                         fluidRow(
+                             column(width = 2, 
+                                    uiOutput("descarga"), 
+                                    offset = 1, 
+                                    style = "margin: 20px 0px 10px 0px"),
+                             column(width = 2, 
+                                    uiOutput("clip"), 
+                                    offset = 1, 
+                                    style = "margin: 20px 0px 10px 0px")
+                                    )
+                         ),
+                tabPanel("Info",
+                         tags$p("Web diseñada por ",
+                                tags$a("Samuel Calderon", href = "https://www.samuelenrique.com/blog/"), 
+                                "usando R y Shiny. 
+                                Para reportar errores o sugerir mejorar puedes escribirme al ", 
+                                tags$a("Twitter", href = "https://twitter.com/samuel__case"), 
+                                " o directamente al repositorio de ",
+                                tags$a("Github", href = "https://github.com/calderonsamuel/transparenciaperu"),
+                                ".",
+                                style = "margin-top: 20px")
+                         )
+                )
         )
     )
 )
