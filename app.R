@@ -12,7 +12,7 @@ ui <- fluidPage(
     rclipboardSetup(),
 
     # Application title
-    titlePanel("Transparencia Peru"),
+    titlePanel("Transparencia Rápida"),
 
     sidebarLayout(
         sidebarPanel(
